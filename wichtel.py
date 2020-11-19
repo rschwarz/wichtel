@@ -45,32 +45,34 @@ def parse():
     return addresses, tabus
 
 
+def all_different(source, image):
+    """Check whether source map has fixed point."""
+    return all([x != y for x, y in zip(source, image)])
+
+
+def count_isolated_transpositions(source, image):
+    """Check whether a, b exist, with a -> b and b -> a"""
+    count = 0
+    f = dict(zip(source, image))
+    for s, i in zip(source, image):
+        if f[i] == s:
+            count += 1
+    return count
+
+
+def good_matching(source, image, tabus):
+    """Check if matching satisfies our constraints"""
+    if not all_different(source, image):
+        return False
+    if count_isolated_transpositions(source, image) > 0:
+        return False
+    return all(y not in tabus[x] for x, y in zip(source, image))
+
+
 def matching(names, tabus):
     """Find a bijective map without fixed points."""
-
-    def all_different(source, image):
-        """Check whether source map has fixed point."""
-        return all([x != y for x, y in zip(source, image)])
-
-    def count_isolated_transpositions(source, image):
-        """Check whether a, b exist, with a -> b and b -> a"""
-        count = 0
-        f = dict(zip(source, image))
-        for s, i in zip(source, image):
-            if f[i] == s:
-                count += 1
-        return count
-
-    def good_matching(source, image):
-        """Check if matching satisfies our constraints"""
-        if not all_different(source, image):
-            return False
-        if count_isolated_transpositions(source, image) > 0:
-            return False
-        return all(y not in tabus[x] for x, y in zip(source, image))
-
     giftees = list(names)
-    while not good_matching(names, giftees):
+    while not good_matching(names, giftees, tabus):
         random.shuffle(giftees)
     return dict(zip(names, giftees))
 
