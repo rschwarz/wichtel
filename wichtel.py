@@ -1,5 +1,5 @@
-#! /usr/bin/env python2
-# -*- coding: utf-8 -*- 
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 '''
 A helper script to draw giftees in a random and secret fashion.
