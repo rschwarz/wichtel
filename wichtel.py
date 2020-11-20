@@ -6,7 +6,7 @@ A helper script to draw giftees in a random and secret fashion.
 Participants are notified by email.
 """
 
-import fileinput
+import argparse
 import getpass
 import random
 import smtplib
@@ -21,13 +21,6 @@ um ein wunderschön Präsent.
 Für {1} bist du der Bote.
 Wenn du nichts weißt, bring Socken, rote.
 """
-
-_HOST = "mail.com"
-_USER = "user@mail.com"
-_PW = None  # prompt
-
-_SENDER = _USER
-_MASTER = _USER
 
 
 def parse(config):
@@ -87,21 +80,47 @@ def matching(tabus):
 def send(srv, recipient, address, giftee):
     """Send _MESSAGE to address using server."""
     srv.sendmail(
-        from_addr=_SENDER,
-        to_addrs=[address, _MASTER],
+        from_addr=args.sender,
+        to_addrs=[address, args.cc],
         msg=_MESSAGE.format(recipient, giftee),
     )
 
 
-if __name__ == "__main__":
-    participants, tabus = parse(fileinput.input())
+def main(args):
+    with open(args.participants) as participants_file:
+        participants, tabus = parse(participants_file)
+
     match = matching(tabus)
 
-    if _PW is None:
-        _PW = getpass.getpass()
+    if args.dryrun:
+        for k, v in match.items():
+            print(f"{k} \t gifts \t {v}")
+        return
 
-    srv = smtplib.SMTP(_HOST)
-    srv.login(_USER, _PW)
+    if args.pw is None:
+        args.pw = getpass.getpass()
+
+    srv = smtplib.SMTP(args.host)
+    srv.login(args.user, args.pw)
     for name in participants:
-        send(srv, name, participants[name], match[name])
+        send(srv, name, participants[name], match[name], args)
     srv.quit()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(fromfile_prefix_chars="@")
+    parser.add_argument(
+        "participants",
+        help="Colon-separated (name:email:tabus).",
+    )
+    parser.add_argument("--host", help="SMTP host.")
+    parser.add_argument("--user", help="SMPT user (sender).")
+    parser.add_argument("--pw", help="SMPT user's password (optional).")
+    parser.add_argument("--sender", help="Sender email address.")
+    parser.add_argument("--cc", help="CC address for all mails.")
+    parser.add_argument(
+        "--dryrun", action="store_true", help="Don't send mails, just print matching."
+    )
+
+    args = parser.parse_args()
+    main(args)
