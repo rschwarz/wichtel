@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 A helper script to draw giftees in a random and secret fashion.
@@ -7,14 +6,12 @@ Participants are notified by email.
 """
 
 import argparse
+from email.mime.text import MIMEText
 import getpass
 import random
 import smtplib
 
-_MESSAGE = """Content-Type: text/plain; charset="utf-8"
-Subject: Weihnachtswichteln
-
-Hallo {0}, Freund der Wichtelei,
+_MESSAGE = """Hallo {0}, Freund der Wichtelei,
 auch dieses Jahr bist du dabei.
 Kümmre dich jetzt schon im Advent
 um ein wunderschön Präsent.
@@ -79,11 +76,11 @@ def matching(tabus):
 
 def send(srv, recipient, address, giftee, args):
     """Send _MESSAGE to address using server."""
-    srv.sendmail(
-        from_addr=args.sender,
-        to_addrs=[address, args.cc],
-        msg=_MESSAGE.format(recipient, giftee),
-    )
+    msg = MIMEText(_MESSAGE.format(recipient, giftee))
+    msg["Subject"] = "Weihnachtswichteln"
+    msg["To"] = ", ".join([address, args.cc])
+    msg["From"] = args.sender
+    srv.sendmail(args.sender, [address, args.cc], msg.as_string())
 
 
 def main(args):
