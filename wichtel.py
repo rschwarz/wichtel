@@ -94,7 +94,7 @@ def main(args):
 
     if args.dryrun:
         for k, v in match.items():
-            print(f"{k} \t gifts \t {v}")
+            print(f"{k:15s} --> {v}")
         return
 
     if args.pw is None:
