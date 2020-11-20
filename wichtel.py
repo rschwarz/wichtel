@@ -30,18 +30,18 @@ _SENDER = _USER
 _MASTER = _USER
 
 
-def parse():
+def parse(config):
     """Read name/address list and return dictionary"""
     addresses = {}
     tabus = {}
-    for line in fileinput.input():
+    for line in config:
         line = line.strip()
         if line:
             tokens = line.split(":")
             name = tokens[0]
             address = tokens[1]
             addresses[name] = address
-            tabus[name] = tokens[2:]
+            tabus[name] = [t for t in tokens[2:] if t]
     return addresses, tabus
 
 
@@ -94,7 +94,7 @@ def send(srv, recipient, address, giftee):
 
 
 if __name__ == "__main__":
-    participants, tabus = parse()
+    participants, tabus = parse(fileinput.input())
     match = matching(tabus)
 
     if _PW is None:

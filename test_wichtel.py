@@ -1,5 +1,28 @@
+import io
 import pytest
 import wichtel
+
+
+def test_parse():
+    _config = """
+    Homer:homer@simpsons.com:Marge:Patty:Selma
+    Marge:marge@simpsons.com:Homer
+    Bart:bart@simpsons.com:
+    Lisa:lisa@simpsons.com:
+    Patty:patty@bouvier.com:Selma:Homer
+    Selma:selma@bouvier.com:Patty:Homer
+    """
+    addresses, tabus = wichtel.parse(io.StringIO(_config))
+
+    assert isinstance(addresses, dict)
+    assert len(addresses) == 6
+    assert addresses["Homer"] == "homer@simpsons.com"
+
+    assert isinstance(tabus, dict)
+    assert len(tabus) == 6
+    assert addresses.keys() == tabus.keys()
+    assert tabus["Homer"] == ["Marge", "Patty", "Selma"]
+    assert tabus["Bart"] == []
 
 
 @pytest.mark.parametrize(
