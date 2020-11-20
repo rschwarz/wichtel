@@ -50,27 +50,34 @@ def all_different(source, image):
     return all([x != y for x, y in zip(source, image)])
 
 
-def count_isolated_transpositions(source, image):
+def has_isolated_transposition(source, image):
     """Check whether a, b exist, with a -> b and b -> a"""
-    count = 0
     f = dict(zip(source, image))
     for s, i in zip(source, image):
         if f[i] == s:
-            count += 1
-    return count
+            return True
+    return False
+
+
+def matches_tabus(source, image, tabus):
+    """Check whether any is matched to a tabu."""
+    return any(y in tabus[x] for x, y in zip(source, image))
 
 
 def good_matching(source, image, tabus):
     """Check if matching satisfies our constraints"""
     if not all_different(source, image):
         return False
-    if count_isolated_transpositions(source, image) > 0:
+    if has_isolated_transposition(source, image):
         return False
-    return all(y not in tabus[x] for x, y in zip(source, image))
+    if matches_tabus(source, image, tabus):
+        return False
+    return True
 
 
-def matching(names, tabus):
+def matching(tabus):
     """Find a bijective map without fixed points."""
+    names = list(tabus.keys())
     giftees = list(names)
     while not good_matching(names, giftees, tabus):
         random.shuffle(giftees)
@@ -88,7 +95,7 @@ def send(srv, recipient, address, giftee):
 
 if __name__ == "__main__":
     participants, tabus = parse()
-    match = matching(participants.keys(), tabus)
+    match = matching(tabus)
 
     if _PW is None:
         _PW = getpass.getpass()
