@@ -77,7 +77,7 @@ def matching(tabus):
     return dict(zip(names, giftees))
 
 
-def send(srv, recipient, address, giftee):
+def send(srv, recipient, address, giftee, args):
     """Send _MESSAGE to address using server."""
     srv.sendmail(
         from_addr=args.sender,
