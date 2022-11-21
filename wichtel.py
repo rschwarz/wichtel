@@ -98,6 +98,7 @@ def main(args):
         args.pw = getpass.getpass()
 
     srv = smtplib.SMTP(args.host)
+    srv.starttls()
     srv.login(args.user, args.pw)
     for name in participants:
         send(srv, name, participants[name], match[name], args)
