@@ -11,12 +11,12 @@ import getpass
 import random
 import smtplib
 
-_MESSAGE = """Hallo {0}, Freund der Wichtelei,
-auch dieses Jahr bist du dabei.
-Kümmre dich jetzt schon im Advent
-um ein wunderschön Präsent.
-Für {1} bist du der Bote.
-Wenn du nichts weißt, bring Socken, rote.
+_MESSAGE = """Hallo {0}, wir machen darum keinen Bogen,
+auch dein Name wurde gezogen,
+Freue dich, aber bedenke,
+für {1} besorgst du die Geschenke.
+Es gibt nicht jedes Jahr das selbe,
+wenn du nichts weißt, bring Socken, gelbe.
 """
 
 
